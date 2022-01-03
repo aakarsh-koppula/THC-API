@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,10 @@ public class ReservationControl {
 
 	@Autowired
 	private ReservationService reservationService;
+	@Autowired
+    private KafkaTemplate<String, List<Reservation>> kafkaTemplate;
+
+    private static final String TOPIC = "DailyReservations";
 	
 	@GetMapping("/location/{id}/all-reservations")
 	public List<Reservation> allReservationsFromALocation(@PathVariable int id) {
@@ -173,5 +178,25 @@ public class ReservationControl {
 			logger.error(e.getStackTrace().toString());
 		}	
 	}
+	
+	@GetMapping("/kafka")
+	public String allReservationsPerDay() {
+		logger.info("retrieving all reservations to publish to kafka");
+		String pattern = "dd/MM/yyyy";
+        DateFormat df = new SimpleDateFormat(pattern);
+        Date today = new Date();
+        String date = df.format(today);
+		List<Reservation> listReservations = null;
+		try {
+			listReservations = reservationService.getAllReservationsInADay(date);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			logger.error(e.getStackTrace().toString());
+		}
+		
+		kafkaTemplate.send(TOPIC, listReservations);
+		return "Published Successfully" ;
+	}
+	
 
 }

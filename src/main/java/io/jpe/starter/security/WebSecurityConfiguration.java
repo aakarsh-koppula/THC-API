@@ -35,7 +35,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
     	logger.info("overriding configure");
-        http.cors().and().csrf().disable().authorizeRequests().antMatchers("/").permitAll();
+        http.cors().and().csrf().disable().authorizeRequests().antMatchers("/**").hasAuthority("Admin").and().formLogin();
                 //.antMatchers("/locations/**").hasAuthority("Admin")
                 //.antMatchers("/locations").hasAuthority("Admin")
                 //.antMatchers("/location/**").hasAuthority("Admin")

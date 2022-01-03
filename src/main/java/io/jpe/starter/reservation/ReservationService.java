@@ -29,6 +29,19 @@ public class ReservationService {
 		}
 	}
 
+	public List<Reservation> getAllReservationsInADay(String date) {
+		logger.info("function to retrieve all reservations at a location");
+		List<Reservation> reservationlistlist = new ArrayList<>();
+		try {
+			reservationRepository.findAllByDate(date).forEach(reservationlistlist::add);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			logger.error(e.getStackTrace().toString());
+		}
+		
+		return reservationlistlist;
+	}
+	
 	public List<Reservation> getAllReservationsFromLocation(int id) {
 		logger.info("function to retrieve all reservations at a location");
 		List<Reservation> reservationlistlist = new ArrayList<>();

@@ -10,5 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReservationRepository extends PagingAndSortingRepository <Reservation, Integer> {
 	public List<Reservation> findAllByLocationId(int id);
+	public List<Reservation> findAllByDate(String date);
 	public List<Reservation> findAllByLocationId(int id, Pageable pageable);
 }
